@@ -223,13 +223,16 @@ public:
       return add(key,item);
     }
     if  (_store.is_null(loc.second)) {
-      cerr << "inserting " << key << " : " << loc.first << " : " << item << " at " << loc.second << endl;
+      cerr << "inserting " << key << " : " << loc.first << " : " << item
+          << " at " << loc.second << endl;
       _store.replace(loc.second, new Node(key, loc.first, item));
       _size += 1;
     } else {
       auto_type old = _store.replace(loc.second, new Node(key, loc.first, item));
-      cerr << "replacing, delete " << old->key << " : " << old->home << " : " << old->item << endl;
-      cerr << "           inserting " << key << " : " << loc.first << " : " << item << " at " << loc.second << endl;
+      cerr << "replacing, delete " << old->key << " : " << old->home << " : "
+           << old->item << endl;
+      cerr << "           inserting " << key << " : " << loc.first << " : "
+          << item << " at " << loc.second << endl;
     }
   }
 
@@ -287,7 +290,8 @@ public:
         cerr << Key(".");
       }
     }
-    cerr << "} {" << _size << ", " << _table_size << ", " << (double)_size/(double)_table_size << '}' << endl;
+    cerr << "} {" << _size << ", " << _table_size << ", "
+         << (double)_size/(double)_table_size << '}' << endl;
   }  
 
 protected:
@@ -321,7 +325,8 @@ protected:
           assert(a[probe] == NULL);
           a[target]->home = index;
         } else {
-          cerr << " happy " << probe << " : " << full_hash <<  ", " << off << ", " << target << endl;
+          cerr << " happy " << probe << " : " << full_hash <<  ", " << off
+               << ", " << target << endl;
         }
       }
     }
@@ -353,7 +358,8 @@ protected:
       } else {
         Node& n = _store[probe];
         if ((index == n.home) && (key == n.key)) {
-          cerr << "locate found old " << n.key << " : " << n.home << " : " << n.item << endl;
+          cerr << "locate found old " << n.key << " : " << n.home << " : "
+               << n.item << endl;
           return std::pair<size_type,size_type>(index,probe);
         }
       }
@@ -394,7 +400,9 @@ protected:
         if (new_off < HOP_LIM) {
           {
             Node& n = _store[probe];
-            cerr << "found existing Node to Hop: " << n.key << " : " <<  n.home << " : " <<  n.item << " moves " << probe << " -> " << h.second << endl;
+            cerr << "found existing Node to Hop: " << n.key << " : " <<  n.home
+                 << " : " <<  n.item << " moves " << probe << " -> " 
+                 << h.second << endl;
           }
           _store.swap(probe, h.second);
           assert(!_store.is_null(h.second));
