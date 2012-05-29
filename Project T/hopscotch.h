@@ -2,6 +2,14 @@
 //  hopscotch.h
 //  Project T
 //
+//  This is written to help me recall how to write C++.
+//  I have a chatty log to stderr so I can follow the internals.
+//
+//  The hash map below uses a simplied hopscotch algorithm.
+//  http://en.wikipedia.org/wiki/Hopscotch_hashing
+//  
+//  This may also annoy kittens and crash your program if you use it.
+//
 //  Created by Chris Kuklewicz on 2012/05/27.
 //  Copyright (c) 2012 Chris Kuklewicz. All rights reserved.
 //
@@ -20,25 +28,28 @@ namespace hopscotch {
 using std::cerr;
 using std::endl;
 
-template <typename T>
+// Key needs to mimic the std::string methods c_str() and size() for hashing.
+// T needs to be a copyable value to get it into the map.  The map does
+// not copy it afterwards. T may be a const type.
+template <typename Key, typename T>
 class hopscotch{
 
-public:
-  // This is the internal Node type.
+protected:  
+
+  // This is the internal Node type.  Stores items of type T as a value.
   class Node {
   public:
     typedef typename boost::ptr_vector<boost::nullable<Node> >::size_type size_type;
     
-    std::string key;
+    const Key key;
     size_type home;
     T item;
     
-    Node(std::string k, size_type h, T& i) : key(k), home(h), item(i) {};
+    Node(Key k, size_type h, T& i) : key(k), home(h), item(i) {};
     ~Node() { cerr << "~Node " << key << " : " << item << endl; }
   };
   
-protected:
-  
+  // I need secret access to ptr_vector to make it work for this
   class mypv : public boost::ptr_vector<boost::nullable<Node> > {
     public:
     typedef typename boost::ptr_vector<boost::nullable<Node> >::size_type size_type;
@@ -50,49 +61,159 @@ protected:
 
     // ptr_vector::c_array does not work with boost::nullable<> so this
     // mypv subclass has a subtlely different my_c_array that does work.
-    value_type* my_c_array() // nothrow
+    // This is needed for resize.
+    Node** my_c_array() // nothrow
     {
-      if( this->empty() )
+      if ( this->empty() )
         return 0;
-//      T** res = reinterpret_cast<T**>( &this->begin().base()[0] );      
-      return reinterpret_cast<Node**>(&this->begin().base()[0]);
+      else
+        return reinterpret_cast<Node**>(&(this->begin().base()[0]));
+    }
+
+    // To avoid using my_c_array() in erase, I add reset_at.
+    bool reset_at(size_type n) {
+      if ( this->empty() || (this->size() <= n) )
+        return false;
+      Node* p = static_cast<Node*>(this->base()[n]);
+      if (p == NULL) {
+        return false;
+      } else {
+        this->base()[n] = NULL;
+        delete p;
+        return true;
+      }
+    }
+    
+    // To avoid using my_c_array() in hop, I add swap.
+    bool swap(size_type a, size_type b) {
+      if ( this->empty() || (this->size() <= a) || (this->size() <= b) )
+        return false;
+      void* val_a = this->base()[a];
+      this->base()[a] = this->base()[b];
+      this->base()[b] = val_a;
+      return true;
     }
   };
-  
+  typedef typename mypv::iterator iterator_0; // iterator_0 can refer to NULL
+
 public:
   
   typedef typename mypv::size_type size_type;
   typedef typename mypv::auto_type auto_type;
-  typedef typename mypv::iterator iterator;
-  
-  // Currently exposes an iterator to the internal Node type.
-  // You must test with boost::is_null() before derefencing.
-  iterator begin() {
-    return _store.begin();
+  typedef std::pair<const Key&, T&> key_value;
+
+  struct hopscotch_dead : public std::exception {
+    virtual const char* what() { return "hopscotch null pointer deferenced"; }
   };
-  
-  // Currently exposes an iterator to the internal Node type.
-  iterator end() {
-    return _store.end();
-  };
-  
+
+  // Bi-directional iterator for the hopscotch hash map, using key_value
+  class iterator {
+  public:
+    struct iterator_dead : public std::exception {
+      virtual const char* what() { return "hopscotch iterator null pointer deferenced"; }
+    };
+    iterator() : kv(NULL), v(0), x() {}
+    iterator(mypv *v_in, iterator_0 x_in) : kv(NULL), v(v_in), x(x_in) {
+      if (v && x != v->end() && boost::is_null(x))
+        this->operator++();
+    }
+    ~iterator() { reset(); }
+    iterator(const iterator& rhs) {
+      reset();
+      v = rhs.v;
+      x = rhs.x;
+    }
+    iterator& operator=(const iterator rhs) {
+      reset();
+      v = rhs.v;
+      x = rhs.x;
+      return (*this);
+    }
+    bool operator==(const iterator& rhs) { return ((rhs.v == v) && (rhs.x == x)); }
+    bool operator!=(const iterator& rhs) { return ((rhs.v != v) || (rhs.x != x)); }
+    iterator& operator++() {
+      if(v) { reset(); while (x != v->end()   && boost::is_null(++x)); }
+      return (*this); 
+    }
+    iterator& operator--() {
+      if(v) { reset(); while (x != v->begin() && boost::is_null(--x)); }
+      return (*this); 
+    }
+    iterator operator++(int) { 
+      iterator old(*this);
+      this->operator++();
+      return old;
+    }
+    iterator operator--(int) { 
+      iterator old(*this);
+      this->operator--();
+      return old;
+    }
+    key_value operator*(void) {
+      if (kv) {
+        return (*kv);
+      } else {
+        if (v && x != v->end() && !(boost::is_null(x))) {
+          return (*get_kv());
+        } else {
+          throw iterator_dead();
+        }
+      }
+    }
+    const key_value* operator->(void) {
+      if (kv) {
+        return (kv);
+      } else {
+        if (v && x != v->end() && !(boost::is_null(x))) {
+          return get_kv();
+        } else {
+          throw iterator_dead();
+        }
+      }
+    }
     
+  protected:
+    
+    void reset() {
+      if (kv) {
+        delete kv;
+        kv = NULL; 
+      } 
+    }
+    key_value* get_kv() {
+      assert(kv==NULL);
+      kv = new std::pair<const Key&, T&>(x->key, x->item);
+      return kv;
+    }
+    key_value* kv;
+    mypv *v;
+    iterator_0 x;
+  };
+
+  // Iterator over non-empty values in this hash map that returns key-value pairs.
+  iterator begin() { return iterator(&_store,_store.begin()); };
+  iterator end()   { return iterator(&_store,_store.end()); };
+
   // Very basic construction
-  explicit hopscotch(size_type start_table_size = 32) : _table_size(start_table_size), _store(start_table_size) {
+  explicit hopscotch(size_type start_table_size = 32) : 
+    _table_size(start_table_size), 
+    _store(start_table_size) 
+  {
     _store.resize(start_table_size, NULL);
     cerr << "_store.size() is " << _store.size() << endl;
   }
-  // Default destruction
-  ~hopscotch() {};
+  // Default destruction, copy, and assignment should work
   
-  void add(const std::string key, T item) {
+  size_type size() { return _size; }
+  
+  void add(const Key key, T item) {
     loc loc = locate(key);
     if (loc.second >= _table_size) {
       cerr << "need to resize! No hole at all for " << key << endl;
       resize();
       return add(key,item);
     }
-    if (diff(loc.first, loc.second) > HOP_LIM && _store.is_null(loc.second)) {
+    if (diff(loc.first, loc.second) >= HOP_LIM && _store.is_null(loc.second)) {
       cerr << "need to hop! hole too distant for " << key << endl;
       loc = hop(loc);
     }
@@ -116,35 +237,42 @@ public:
   // A non-NULL returned pointer is owned by the hash map.
   // The pointer will become invalid if the key is overwritten,
   // the key is erased, or the hash map is deleted.
-  T* operator[](const std::string key) {
-    loc h = locate(key);
-    if (h.second >= _table_size || _store.is_null(h.second)) {
+  T* lookup(const Key& key) {
+    size_type n = locate(key).second;
+    if (n < _table_size && !_store.is_null(n)) {
+      return &(_store[n].item);
+    } else {
       return NULL;
     }
-    return &(_store[h.second].item);
   }
-  
+
+  // The reference will become invalid if the key is overwritten,
+  // the key is erased, or the hash map is deleted.
+  // An exception is thrown if the key is not present.
+  T& operator[](const Key& key) {
+    size_type n = locate(key).second;
+    if (n < _table_size && !_store.is_null(n)) {
+      return (_store[n].item);
+    } else {
+      throw hopscotch_dead();
+    }
+  }
+
   // member tests whether the key is in the hash map.
-  bool member(const std::string key) {
-    loc h = locate(key);
-    return (h.second < _table_size && !_store.is_null(h.second));
+  bool member(const Key key) {
+    size_type n = locate(key).second;
+    return (n < _table_size && !_store.is_null(n));
   }
   
   // erase return true when the key was found and erased and false
   // when the key was not in the hash map.
-  bool erase(const std::string key) {
-    loc h = locate(key);
-    if (h.second < _table_size && !_store.is_null(h.second)) {
-      cerr << "++ erasing " << key << " at " << h.second << endl;
-      Node *gone;
-      {
-        Node **a = _store.my_c_array();
-        gone = a[h.second];
-        a[h.second] = 0;
-      }
-      delete gone;
-      return true;
+  bool erase(const Key key) {
+    size_type n = locate(key).second;
+    if (n < _table_size && !_store.is_null(n)) {
+      cerr << "++ erasing " << key << " at " << n << endl;
+      return _store.reset_at(n);
     } else {
+      cerr << "++ not erasing " << key << endl;
       return false;
     }
   }
@@ -152,11 +280,11 @@ public:
   // see is used for debugging and demonstration (with length 1 keys).
   void see() {
     cerr << '{';
-    for(iterator it = _store.begin(); it != _store.end(); ++it) {
+    for(iterator_0 it = _store.begin(); it != _store.end(); ++it) {
       if( !boost::is_null(it) ) {
         cerr << it->key;
       } else {
-        cerr << std::string(".");
+        cerr << Key(".");
       }
     }
     cerr << "} {" << _size << ", " << _table_size << ", " << (double)_size/(double)_table_size << '}' << endl;
@@ -165,36 +293,35 @@ public:
 protected:
   
   // Double the size of the table, moving some old entries to the new space.
+  // I claim that this cannot fail, no collisions arise.
   void resize() {
     const size_type old_table_size = _table_size;
     const size_type new_table_size = 2 * old_table_size;
     _store.resize(new_table_size, NULL);
-    {
-      Node **a = _store.my_c_array();
-      Node **it = a;
-      uint32_t full_hash;
-      size_type probe, off, index, target;
-      for(probe=0; probe < old_table_size; ++it, ++probe) {
-        if (*it) {
-          off = diff((*it)->home, probe, old_table_size);
+    Node **a = _store.my_c_array();
+    uint32_t full_hash;
+    size_type off, index, target;
+    Node **it = a;
+    size_type probe = 0;
+    for(; probe < old_table_size; ++it, ++probe) {
+      if (*it) {
+        off = diff((*it)->home, probe, old_table_size);
 
-          full_hash = CityHash64((*it)->key.c_str(), (*it)->key.size());
-          index = full_hash % new_table_size;
-          target = (index + off) % new_table_size;
+        full_hash = CityHash64((*it)->key.c_str(), (*it)->key.size());
+        index = full_hash % new_table_size;
+        target = (index + off) % new_table_size;
 
-          if (target != probe) {            
-            cerr << "  moving " << probe << " -> " << target << endl;
-            assert(a[target] == NULL);
-            assert(a[probe] != NULL);
-            a[target] = a[probe];
-            a[probe] = NULL;
-            assert(a[target] != NULL);
-            assert(a[probe] == NULL);
-            a[target]->home = index;
-          } else {
-            cerr << " happy " << probe << " : " << full_hash <<  ", " << off << ", " << target << endl;
-            
-          }
+        if (target != probe) {            
+          cerr << "  moving " << probe << " -> " << target << endl;
+          assert(a[target] == NULL);
+          assert(a[probe] != NULL);
+          a[target] = a[probe];
+          a[probe] = NULL;
+          assert(a[target] != NULL);
+          assert(a[probe] == NULL);
+          a[target]->home = index;
+        } else {
+          cerr << " happy " << probe << " : " << full_hash <<  ", " << off << ", " << target << endl;
         }
       }
     }
@@ -211,7 +338,7 @@ protected:
   //    2) loc.second is _table_size and there is no hole up to ADD_LIM
   // Note that loc.second may wrap modulo _table_size so loc.second < loc.first,
   //   use diff(loc.first, loc.send) to get the positive offset.
-  loc locate(const std::string key) {
+  loc locate(const Key key) {
     uint32_t full_hash = CityHash64(key.c_str(), key.size());
     size_type index = full_hash % _table_size;
     size_type hole = _table_size;
@@ -244,12 +371,14 @@ protected:
     return ((probe>=home) ? probe-home : (_table_size+probe)-home);
   }
   
-  // Move hole in loc.second to be in HOP_LIM of loc.first
+  // Move hole in loc.second starting more distant than HOP_LIM of loc.first
+  // to be within HOP_LIM of loc.first.  This may fail in which case
+  // the retured loc.second will be _table_size.
   loc hop(loc h) {
-    assert(_store.is_null(h.second));
     size_type in_off = diff(h.first, h.second);
-    assert(in_off > HOP_LIM);
-    do {
+    assert(_store.is_null(h.second));
+    assert(in_off >= HOP_LIM);
+    do { // loop state h and in_off
       size_type off = in_off-(HOP_LIM-1);
       assert(1 <= off);
       size_type probe;
@@ -267,15 +396,10 @@ protected:
             Node& n = _store[probe];
             cerr << "found existing Node to Hop: " << n.key << " : " <<  n.home << " : " <<  n.item << " moves " << probe << " -> " << h.second << endl;
           }
-          {
-            // Must do this out of scope of Node& above
-            Node **a = _store.my_c_array();
-            a[h.second] = a[probe];
-            a[probe] = NULL;
-          }
+          _store.swap(probe, h.second);
           assert(!_store.is_null(h.second));
           assert(_store.is_null(probe));
-          h.second = probe;
+          h.second = probe; // mutate loop state h
           break; // stop for-loop when (off < in_off)
         }
       }
@@ -283,13 +407,13 @@ protected:
         h.second = _table_size;
         break; // stop while-loop because hopping failed
       }
-      in_off = diff(h.first, h.second);
-    } while (in_off > HOP_LIM);
+      in_off = diff(h.first, h.second); // mutate loop state in_off
+    } while (in_off >= HOP_LIM);
     return h;
   }
   
-  static const size_type HOP_LIM = 4;
-  static const size_type ADD_LIM = 8;
+  static const size_type HOP_LIM = 5; // 0 <= offset of entry from home < HOP_LIM
+  static const size_type ADD_LIM = 8; // 0 <= offset of located hole < ADD_LIM
   size_type _table_size, _size;
   mypv _store;
 

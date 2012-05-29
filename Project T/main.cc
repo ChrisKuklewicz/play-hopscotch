@@ -10,7 +10,7 @@
 #include "city.h"
 #include "hopscotch.h"
 
-using std::cout;
+using std::cerr;
 using std::endl;
 
 /* 
@@ -25,8 +25,16 @@ using std::endl;
    9=t=A
    3=u=y
  */
+
+typedef hopscotch::hopscotch<std::string,int> H;
 void test() {
-  hopscotch::hopscotch<int> *h = new hopscotch::hopscotch<int>();
+  H *h = new H();
+  assert(h->begin() == h->end());
+  try {
+    cerr << (h->begin())->second << "impossible" << endl;
+  } catch (H::iterator::iterator_dead e) {
+    cerr << "Caught : " << std::string(e.what()) << endl;
+  }
   for (char c='a'; c<='z'; ++c) {
     std::string k(1,c);
     h->add(k,(int)c);
@@ -41,25 +49,49 @@ void test() {
   h->add(std::string("f"),1); 
   h->add(std::string("p"),1); 
   h->add(std::string("q"),1); 
-  h->add(std::string("C"),1); 
-  h->add(std::string("f"),2); 
+  h->add(std::string("C"),1);
+  
+  h->add(std::string("f"),2);
   h->add(std::string("p"),2); 
   h->add(std::string("q"),2); 
   h->add(std::string("C"),2);
   
   h->erase(std::string("f"));
   h->erase(std::string("C"));
+  h->erase(std::string("f")); // again
   
   h->add(std::string("f"),3); 
   h->add(std::string("p"),3); 
   h->add(std::string("q"),3); 
-  h->add(std::string("C"),3); 
+  h->add(std::string("C"),3);
+  
+  H::iterator it = h->begin();
+  const H::iterator end = h->end();
+  int count=1;
+  for(; it != end; ++it, ++count) {
+    cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
+    it->second = count;
+  }
+  assert(h->lookup(std::string("not present")) == NULL);
+  h->begin()->second = (-1);
+  (--(h->end()))->second = (-2);
+  (*h)[std::string("a")] = 1000;
+  for(it = h->begin(), count=1; it != end; ++it, ++count) {
+    cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
+  }
+  
+  try {
+    cerr << (*h)[std::string("not present")] << "impossible" << endl;
+  } catch (H::hopscotch_dead e) {
+    cerr << "Caught : " << std::string(e.what()) << endl;
+  }
   delete h;
+  h=NULL;
 }
 
 int main(int argc, const char * argv[]) {
   // insert code here...
-  cout << "Hello, World!\n" << endl;
+  cerr << "Hello, World!\n" << endl;
   
   test();
   return 0;
