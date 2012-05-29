@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		97A1F5D615703C6300D8B6BE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97A1F5D515703C6300D8B6BE /* main.cpp */; };
 		97A1F5D815703C6300D8B6BE /* Project_T.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 97A1F5D715703C6300D8B6BE /* Project_T.1 */; };
+		97A1F5E31572D74700D8B6BE /* hopscotch.cc in Sources */ = {isa = PBXBuildFile; fileRef = 97A1F5E21572D74700D8B6BE /* hopscotch.cc */; };
+		97A1F5EA15739F7900D8B6BE /* libcityhash.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 97A1F5E915739F7900D8B6BE /* libcityhash.0.dylib */; };
+		97A1F5EC1573A24A00D8B6BE /* main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 97A1F5EB1573A24A00D8B6BE /* main.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +28,11 @@
 
 /* Begin PBXFileReference section */
 		97A1F5D115703C6200D8B6BE /* Project T */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Project T"; sourceTree = BUILT_PRODUCTS_DIR; };
-		97A1F5D515703C6300D8B6BE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		97A1F5D715703C6300D8B6BE /* Project_T.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Project_T.1; sourceTree = "<group>"; };
+		97A1F5DF1572CA4F00D8B6BE /* hopscotch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hopscotch.h; sourceTree = "<group>"; };
+		97A1F5E21572D74700D8B6BE /* hopscotch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hopscotch.cc; sourceTree = "<group>"; };
+		97A1F5E915739F7900D8B6BE /* libcityhash.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcityhash.0.dylib; path = "../../../../../../../opt/cityhash-1.0.3/lib/libcityhash.0.dylib"; sourceTree = "<group>"; };
+		97A1F5EB1573A24A00D8B6BE /* main.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cc; path = "Project T/main.cc"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				97A1F5EA15739F7900D8B6BE /* libcityhash.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +50,7 @@
 		97A1F5C615703C6200D8B6BE = {
 			isa = PBXGroup;
 			children = (
+				97A1F5E915739F7900D8B6BE /* libcityhash.0.dylib */,
 				97A1F5D415703C6200D8B6BE /* Project T */,
 				97A1F5D215703C6200D8B6BE /* Products */,
 			);
@@ -60,10 +67,20 @@
 		97A1F5D415703C6200D8B6BE /* Project T */ = {
 			isa = PBXGroup;
 			children = (
-				97A1F5D515703C6300D8B6BE /* main.cpp */,
+				97A1F5EB1573A24A00D8B6BE /* main.cc */,
+				97A1F5DE1572C9B500D8B6BE /* src */,
 				97A1F5D715703C6300D8B6BE /* Project_T.1 */,
 			);
 			path = "Project T";
+			sourceTree = "<group>";
+		};
+		97A1F5DE1572C9B500D8B6BE /* src */ = {
+			isa = PBXGroup;
+			children = (
+				97A1F5DF1572CA4F00D8B6BE /* hopscotch.h */,
+				97A1F5E21572D74700D8B6BE /* hopscotch.cc */,
+			);
+			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -92,7 +109,9 @@
 		97A1F5C815703C6200D8B6BE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = com.mightyreason;
 				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = "Chris Kuklewicz";
 			};
 			buildConfigurationList = 97A1F5CB15703C6200D8B6BE /* Build configuration list for PBXProject "Project T" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -116,7 +135,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				97A1F5D615703C6300D8B6BE /* main.cpp in Sources */,
+				97A1F5EC1573A24A00D8B6BE /* main.cc in Sources */,
+				97A1F5E31572D74700D8B6BE /* hopscotch.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,8 +146,9 @@
 		97A1F5D915703C6300D8B6BE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -144,17 +165,24 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/opt/cityhash-1.0.3/include",
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = "/opt/cityhash-1.0.3/lib";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "/opt/cityhash-1.0.3/include /opt/local/include";
 			};
 			name = Debug;
 		};
 		97A1F5DA15703C6300D8B6BE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -165,14 +193,24 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/opt/cityhash-1.0.3/include",
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = "/opt/cityhash-1.0.3/lib";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "/opt/cityhash-1.0.3/include /opt/local/include";
 			};
 			name = Release;
 		};
 		97A1F5DC15703C6300D8B6BE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"/opt/cityhash-1.0.3/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -180,6 +218,10 @@
 		97A1F5DD15703C6300D8B6BE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"/opt/cityhash-1.0.3/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -203,6 +245,7 @@
 				97A1F5DD15703C6300D8B6BE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
