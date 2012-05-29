@@ -233,12 +233,12 @@ protected:
     }
     return std::pair<size_type,size_type>(index,hole);
   }
-  
+
   // use diff(ideal bin, actual bin, old_table_size) to get the positive offset.
-  size_type diff(size_type home, size_type probe, size_type table_size); /*{
+  size_type diff(size_type home, size_type probe, size_type table_size) {
     return ((probe>=home) ? probe-home : (table_size+probe)-home);
-  }*/
-  
+  }
+
   // use diff(ideal bin, actual bin) to get the positive offset.
   size_type diff(size_type home, size_type probe) {
     return ((probe>=home) ? probe-home : (_table_size+probe)-home);

@@ -33,6 +33,7 @@
 		97A1F5E21572D74700D8B6BE /* hopscotch.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hopscotch.cc; sourceTree = "<group>"; };
 		97A1F5E915739F7900D8B6BE /* libcityhash.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcityhash.0.dylib; path = "../../../../../../../opt/cityhash-1.0.3/lib/libcityhash.0.dylib"; sourceTree = "<group>"; };
 		97A1F5EB1573A24A00D8B6BE /* main.cc */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = main.cc; path = "Project T/main.cc"; sourceTree = SOURCE_ROOT; };
+		97A1F5FA1574D16E00D8B6BE /* example1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = example1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +80,7 @@
 			children = (
 				97A1F5DF1572CA4F00D8B6BE /* hopscotch.h */,
 				97A1F5E21572D74700D8B6BE /* hopscotch.cc */,
+				97A1F5FA1574D16E00D8B6BE /* example1 */,
 			);
 			name = src;
 			sourceTree = "<group>";

@@ -1,0 +1,271 @@
+_store.size() is 32
+inserting a : 26 : 97 at 26
+{..........................a.....} {1, 32, 0.03125}
+inserting b : 13 : 98 at 13
+{.............b............a.....} {2, 32, 0.0625}
+inserting c : 0 : 99 at 0
+{c............b............a.....} {3, 32, 0.09375}
+inserting d : 25 : 100 at 25
+{c............b...........da.....} {4, 32, 0.125}
+inserting e : 4 : 101 at 4
+{c...e........b...........da.....} {5, 32, 0.15625}
+inserting f : 31 : 102 at 31
+{c...e........b...........da....f} {6, 32, 0.1875}
+inserting g : 1 : 103 at 1
+{cg..e........b...........da....f} {7, 32, 0.21875}
+inserting h : 7 : 104 at 7
+{cg..e..h.....b...........da....f} {8, 32, 0.25}
+inserting i : 26 : 105 at 27
+{cg..e..h.....b...........dai...f} {9, 32, 0.28125}
+inserting j : 29 : 106 at 29
+{cg..e..h.....b...........dai.j.f} {10, 32, 0.3125}
+inserting k : 1 : 107 at 2
+{cgk.e..h.....b...........dai.j.f} {11, 32, 0.34375}
+inserting l : 5 : 108 at 5
+{cgk.el.h.....b...........dai.j.f} {12, 32, 0.375}
+inserting m : 16 : 109 at 16
+{cgk.el.h.....b..m........dai.j.f} {13, 32, 0.40625}
+inserting n : 26 : 110 at 28
+{cgk.el.h.....b..m........dainj.f} {14, 32, 0.4375}
+inserting o : 21 : 111 at 21
+{cgk.el.h.....b..m....o...dainj.f} {15, 32, 0.46875}
+inserting p : 31 : 112 at 3
+{cgkpel.h.....b..m....o...dainj.f} {16, 32, 0.5}
+need to hop! hole too distant for q
+searching for existing Node to Hop
+found existing Node to Hop: e : 4 : 101 moves 4 -> 6
+searching for existing Node to Hop
+found existing Node to Hop: g : 1 : 103 moves 1 -> 4
+inserting q : 31 : 113 at 1
+{cqkpgleh.....b..m....o...dainj.f} {17, 32, 0.53125}
+inserting r : 6 : 114 at 8
+{cqkpglehr....b..m....o...dainj.f} {18, 32, 0.5625}
+inserting s : 29 : 115 at 30
+{cqkpglehr....b..m....o...dainjsf} {19, 32, 0.59375}
+inserting t : 9 : 116 at 9
+{cqkpglehrt...b..m....o...dainjsf} {20, 32, 0.625}
+need to hop! hole too distant for u
+searching for existing Node to Hop
+found existing Node to Hop: h : 7 : 104 moves 7 -> 10
+inserting u : 3 : 117 at 7
+{cqkpgleurth..b..m....o...dainjsf} {21, 32, 0.65625}
+inserting v : 10 : 118 at 11
+{cqkpgleurthv.b..m....o...dainjsf} {22, 32, 0.6875}
+inserting w : 17 : 119 at 17
+{cqkpgleurthv.b..mw...o...dainjsf} {23, 32, 0.71875}
+inserting x : 24 : 120 at 24
+{cqkpgleurthv.b..mw...o..xdainjsf} {24, 32, 0.75}
+need to resize! No hole at all for y
+  moving 0 -> 32
+  moving 1 -> 33
+  moving 2 -> 34
+  moving 3 -> 35
+  moving 4 -> 36
+ happy 5 : 2450688005, 0, 5
+  moving 6 -> 38
+ happy 7 : 1981898051, 4, 7
+ happy 8 : 511999110, 2, 8
+  moving 9 -> 41
+ happy 10 : 1076941191, 3, 10
+  moving 11 -> 43
+ happy 13 : 1982436109, 0, 13
+  moving 16 -> 48
+ happy 17 : 3098228689, 0, 17
+ happy 21 : 4086387733, 0, 21
+ happy 24 : 3510494104, 0, 24
+ happy 25 : 2136526169, 0, 25
+  moving 26 -> 58
+  moving 27 -> 59
+ happy 28 : 239748506, 2, 28
+ happy 29 : 2615715741, 0, 29
+ happy 30 : 2847755293, 1, 30
+ happy 31 : 2842370079, 0, 31
+{.....l.ur.h..b...w...o..xd..njsfcqkpg.e..t.v....m.........ai....} {24, 64, 0.375}
+inserting y : 3 : 121 at 3
+{...y.l.ur.h..b...w...o..xd..njsfcqkpg.e..t.v....m.........ai....} {25, 64, 0.390625}
+inserting z : 22 : 122 at 22
+{...y.l.ur.h..b...w...oz.xd..njsfcqkpg.e..t.v....m.........ai....} {26, 64, 0.40625}
+inserting A : 41 : 65 at 42
+{...y.l.ur.h..b...w...oz.xd..njsfcqkpg.e..tAv....m.........ai....} {27, 64, 0.421875}
+inserting B : 16 : 66 at 16
+{...y.l.ur.h..b..Bw...oz.xd..njsfcqkpg.e..tAv....m.........ai....} {28, 64, 0.4375}
+need to hop! hole too distant for C
+searching for existing Node to Hop
+need to resize! could not hop for C
+  moving 3 -> 67
+ happy 5 : 2450688005, 0, 5
+  moving 7 -> 71
+ happy 8 : 511999110, 2, 8
+ happy 10 : 1076941191, 3, 10
+ happy 13 : 1982436109, 0, 13
+  moving 16 -> 80
+  moving 17 -> 81
+ happy 21 : 4086387733, 0, 21
+ happy 22 : 476319382, 0, 22
+ happy 24 : 3510494104, 0, 24
+  moving 25 -> 89
+ happy 28 : 239748506, 2, 28
+ happy 29 : 2615715741, 0, 29
+ happy 30 : 2847755293, 1, 30
+ happy 31 : 2842370079, 0, 31
+ happy 32 : 2411623456, 0, 32
+ happy 33 : 1131503775, 2, 33
+ happy 34 : 2122455585, 1, 34
+ happy 35 : 759035679, 4, 35
+ happy 36 : 785836961, 3, 36
+ happy 38 : 1400211492, 2, 38
+ happy 41 : 2726968361, 0, 41
+  moving 42 -> 106
+ happy 43 : 2588378154, 1, 43
+ happy 48 : 601633200, 0, 48
+  moving 58 -> 122
+ happy 59 : 556838458, 1, 59
+{.....l..r.h..b.......oz.x...njsfcqkpg.e..t.v....m..........i.......y...u........Bw.......d................A...............a.....} {28, 128, 0.21875}
+inserting C : 95 : 67 at 95
+{.....l..r.h..b.......oz.x...njsfcqkpg.e..t.v....m..........i.......y...u........Bw.......d.....C..........A...............a.....} {29, 128, 0.226562}
+inserting D : 54 : 68 at 54
+{.....l..r.h..b.......oz.x...njsfcqkpg.e..t.v....m.....D....i.......y...u........Bw.......d.....C..........A...............a.....} {30, 128, 0.234375}
+inserting E : 13 : 69 at 14
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m.....D....i.......y...u........Bw.......d.....C..........A...............a.....} {31, 128, 0.242188}
+inserting F : 96 : 70 at 96
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m.....D....i.......y...u........Bw.......d.....CF.........A...............a.....} {32, 128, 0.25}
+inserting G : 99 : 71 at 99
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m.....D....i.......y...u........Bw.......d.....CF..G......A...............a.....} {33, 128, 0.257812}
+inserting H : 53 : 72 at 53
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HD....i.......y...u........Bw.......d.....CF..G......A...............a.....} {34, 128, 0.265625}
+inserting I : 121 : 73 at 121
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HD....i.......y...u........Bw.......d.....CF..G......A..............Ia.....} {35, 128, 0.273438}
+inserting J : 108 : 74 at 108
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HD....i.......y...u........Bw.......d.....CF..G......A.J............Ia.....} {36, 128, 0.28125}
+inserting K : 55 : 75 at 55
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HDK...i.......y...u........Bw.......d.....CF..G......A.J............Ia.....} {37, 128, 0.289062}
+inserting L : 67 : 76 at 68
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HDK...i.......yL..u........Bw.......d.....CF..G......A.J............Ia.....} {38, 128, 0.296875}
+inserting M : 109 : 77 at 109
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HDK...i.......yL..u........Bw.......d.....CF..G......A.JM...........Ia.....} {39, 128, 0.304688}
+inserting N : 124 : 78 at 124
+{.....l..r.h..bE......oz.x...njsfcqkpg.e..t.v....m....HDK...i.......yL..u........Bw.......d.....CF..G......A.JM...........Ia.N...} {40, 128, 0.3125}
+inserting O : 22 : 79 at 23
+{.....l..r.h..bE......ozOx...njsfcqkpg.e..t.v....m....HDK...i.......yL..u........Bw.......d.....CF..G......A.JM...........Ia.N...} {41, 128, 0.320312}
+inserting P : 97 : 80 at 97
+{.....l..r.h..bE......ozOx...njsfcqkpg.e..t.v....m....HDK...i.......yL..u........Bw.......d.....CFP.G......A.JM...........Ia.N...} {42, 128, 0.328125}
+inserting Q : 1 : 81 at 1
+{.Q...l..r.h..bE......ozOx...njsfcqkpg.e..t.v....m....HDK...i.......yL..u........Bw.......d.....CFP.G......A.JM...........Ia.N...} {43, 128, 0.335938}
+inserting R : 72 : 82 at 72
+{.Q...l..r.h..bE......ozOx...njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFP.G......A.JM...........Ia.N...} {44, 128, 0.34375}
+inserting S : 96 : 83 at 98
+{.Q...l..r.h..bE......ozOx...njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSG......A.JM...........Ia.N...} {45, 128, 0.351562}
+inserting T : 107 : 84 at 107
+{.Q...l..r.h..bE......ozOx...njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSG......ATJM...........Ia.N...} {46, 128, 0.359375}
+inserting U : 21 : 85 at 25
+{.Q...l..r.h..bE......ozOxU..njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSG......ATJM...........Ia.N...} {47, 128, 0.367188}
+inserting V : 111 : 86 at 111
+{.Q...l..r.h..bE......ozOxU..njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSG......ATJM.V.........Ia.N...} {48, 128, 0.375}
+inserting W : 98 : 87 at 100
+{.Q...l..r.h..bE......ozOxU..njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSGW.....ATJM.V.........Ia.N...} {49, 128, 0.382812}
+inserting X : 117 : 88 at 117
+{.Q...l..r.h..bE......ozOxU..njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSGW.....ATJM.V.....X...Ia.N...} {50, 128, 0.390625}
+inserting Y : 18 : 89 at 18
+{.Q...l..r.h..bE...Y..ozOxU..njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw.......d.....CFPSGW.....ATJM.V.....X...Ia.N...} {51, 128, 0.398438}
+inserting Z : 85 : 90 at 85
+{.Q...l..r.h..bE...Y..ozOxU..njsfcqkpg.e..t.v....m....HDK...i.......yL..uR.......Bw...Z...d.....CFPSGW.....ATJM.V.....X...Ia.N...} {52, 128, 0.40625}
+locate found old f : 31 : 102
+replacing, delete f : 31 : 102
+           inserting f : 31 : 1 at 31
+~Node f : 102
+locate found old p : 31 : 112
+replacing, delete p : 31 : 112
+           inserting p : 31 : 1 at 35
+~Node p : 112
+locate found old q : 31 : 113
+replacing, delete q : 31 : 113
+           inserting q : 31 : 1 at 33
+~Node q : 113
+locate found old C : 95 : 67
+replacing, delete C : 95 : 67
+           inserting C : 95 : 1 at 95
+~Node C : 67
+locate found old f : 31 : 1
+replacing, delete f : 31 : 1
+           inserting f : 31 : 2 at 31
+~Node f : 1
+locate found old p : 31 : 1
+replacing, delete p : 31 : 1
+           inserting p : 31 : 2 at 35
+~Node p : 1
+locate found old q : 31 : 1
+replacing, delete q : 31 : 1
+           inserting q : 31 : 2 at 33
+~Node q : 1
+locate found old C : 95 : 1
+replacing, delete C : 95 : 1
+           inserting C : 95 : 2 at 95
+~Node C : 1
+locate found old f : 31 : 2
+++ erasing f at 31
+~Node f : 2
+locate found old C : 95 : 2
+++ erasing C at 95
+~Node C : 2
+inserting f : 31 : 3 at 31
+locate found old p : 31 : 2
+replacing, delete p : 31 : 2
+           inserting p : 31 : 3 at 35
+~Node p : 2
+locate found old q : 31 : 2
+replacing, delete q : 31 : 2
+           inserting q : 31 : 3 at 33
+~Node q : 2
+inserting C : 95 : 3 at 95
+~Node Q : 81
+~Node l : 108
+~Node r : 114
+~Node h : 104
+~Node b : 98
+~Node E : 69
+~Node Y : 89
+~Node o : 111
+~Node z : 122
+~Node O : 79
+~Node x : 120
+~Node U : 85
+~Node n : 110
+~Node j : 106
+~Node s : 115
+~Node f : 3
+~Node c : 99
+~Node q : 3
+~Node k : 107
+~Node p : 3
+~Node g : 103
+~Node e : 101
+~Node t : 116
+~Node v : 118
+~Node m : 109
+~Node H : 72
+~Node D : 68
+~Node K : 75
+~Node i : 105
+~Node y : 121
+~Node L : 76
+~Node u : 117
+~Node R : 82
+~Node B : 66
+~Node w : 119
+~Node Z : 90
+~Node d : 100
+~Node C : 3
+~Node F : 70
+~Node P : 80
+~Node S : 83
+~Node G : 71
+~Node W : 87
+~Node A : 65
+~Node T : 84
+~Node J : 74
+~Node M : 77
+~Node V : 86
+~Node X : 88
+~Node I : 73
+~Node a : 97
+~Node N : 78

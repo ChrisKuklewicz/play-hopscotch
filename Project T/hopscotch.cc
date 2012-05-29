@@ -10,10 +10,14 @@
 
 //namespace hopscotch {
 
+/*  This fails to work, hopscotch.o gets no symbol for the diff method.
+ 
+ 
 // use diff(ideal bin, actual bin, old_table_size) to get the positive offset.
 template<typename T>
 typename hopscotch::hopscotch<T>::size_type hopscotch::hopscotch<T>::diff(size_type home, size_type probe, size_type table_size) {
   return ((probe>=home) ? probe-home : (table_size+probe)-home);
 }
+ */
 
 //}
