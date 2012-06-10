@@ -27,6 +27,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		97400D1715852CF60026BAEB /* Test Output.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Test Output.txt"; sourceTree = "<group>"; };
 		97A1F5D115703C6200D8B6BE /* Project T */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Project T"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97A1F5D715703C6300D8B6BE /* Project_T.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Project_T.1; sourceTree = "<group>"; };
 		97A1F5DF1572CA4F00D8B6BE /* hopscotch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hopscotch.h; sourceTree = "<group>"; };
@@ -51,6 +52,7 @@
 		97A1F5C615703C6200D8B6BE = {
 			isa = PBXGroup;
 			children = (
+				97400D1715852CF60026BAEB /* Test Output.txt */,
 				97A1F5E915739F7900D8B6BE /* libcityhash.0.dylib */,
 				97A1F5D415703C6200D8B6BE /* Project T */,
 				97A1F5D215703C6200D8B6BE /* Products */,
