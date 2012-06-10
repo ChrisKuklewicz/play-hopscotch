@@ -35,7 +35,6 @@ template <typename Key, typename T>
 class hopscotch{
 
 protected:  
-
   // This is the internal Node type.  Stores items of type T as a value.
   class Node {
   public:
@@ -62,7 +61,7 @@ protected:
     // ptr_vector::c_array does not work with boost::nullable<> so this
     // mypv subclass has a subtlely different my_c_array that does work.
     // This is needed for resize.
-    Node** my_c_array() // nothrow
+    Node** my_c_array()
     {
       if ( this->empty() )
         return 0;
@@ -101,7 +100,7 @@ public:
   typedef typename mypv::size_type size_type;
   typedef typename mypv::auto_type auto_type;
   typedef std::pair<const Key&, T&> key_value;
-
+  
   struct hopscotch_dead : public std::exception {
     virtual const char* what() { return "hopscotch null pointer deferenced"; }
   };
@@ -109,9 +108,11 @@ public:
   // Bi-directional iterator for the hopscotch hash map, using key_value
   class iterator {
   public:
+  
     struct iterator_dead : public std::exception {
       virtual const char* what() { return "hopscotch iterator null pointer deferenced"; }
     };
+     
     iterator() : kv(NULL), v(0), x() {}
     iterator(mypv *v_in, iterator_0 x_in) : kv(NULL), v(v_in), x(x_in) {
       if (v && x != v->end() && boost::is_null(x))
@@ -156,7 +157,8 @@ public:
         if (v && x != v->end() && !(boost::is_null(x))) {
           return (*get_kv());
         } else {
-          throw iterator_dead();
+          //throw iterator_dead();
+          assert(false);
         }
       }
     }
@@ -167,7 +169,8 @@ public:
         if (v && x != v->end() && !(boost::is_null(x))) {
           return get_kv();
         } else {
-          throw iterator_dead();
+          //throw iterator_dead();
+          assert(false);
         }
       }
     }
@@ -251,13 +254,13 @@ public:
 
   // The reference will become invalid if the key is overwritten,
   // the key is erased, or the hash map is deleted.
-  // An exception is thrown if the key is not present.
   T& operator[](const Key& key) {
     size_type n = locate(key).second;
     if (n < _table_size && !_store.is_null(n)) {
       return (_store[n].item);
     } else {
-      throw hopscotch_dead();
+      //throw hopscotch_dead();
+      assert(false);
     }
   }
 

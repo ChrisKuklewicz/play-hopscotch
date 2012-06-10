@@ -30,11 +30,6 @@ typedef hopscotch::hopscotch<std::string,int> H;
 void test() {
   H *h = new H();
   assert(h->begin() == h->end());
-  try {
-    cerr << (h->begin())->second << "impossible" << endl;
-  } catch (H::iterator::iterator_dead e) {
-    cerr << "Caught : " << std::string(e.what()) << endl;
-  }
   for (char c='a'; c<='z'; ++c) {
     std::string k(1,c);
     h->add(k,(int)c);
@@ -79,12 +74,7 @@ void test() {
   for(it = h->begin(), count=1; it != end; ++it, ++count) {
     cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
   }
-  
-  try {
-    cerr << (*h)[std::string("not present")] << "impossible" << endl;
-  } catch (H::hopscotch_dead e) {
-    cerr << "Caught : " << std::string(e.what()) << endl;
-  }
+  assert(!h->member(std::string("this key is not in the map")));
   delete h;
   h=NULL;
 }
