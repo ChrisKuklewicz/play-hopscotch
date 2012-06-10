@@ -20,6 +20,7 @@
 #include <vector>
 #include <list>
 #include "boost/optional.hpp"
+#include "boost/iterator/iterator_facade.hpp"
 #include "boost/ptr_container/ptr_vector.hpp"
 #include "city.h"
 
@@ -40,12 +41,11 @@ protected:
   public:
     typedef typename boost::ptr_vector<boost::nullable<Node> >::size_type size_type;
     
-    const Key key;
+    std::pair<const Key,T> kv;
     size_type home;
-    T item;
     
-    Node(Key k, size_type h, T& i) : key(k), home(h), item(i) {};
-    ~Node() { cerr << "~Node " << key << " : " << item << endl; }
+    Node(Key k, size_type h, T& i) : kv(make_pair(k,i)), home(h) {};
+    ~Node() { cerr << "~Node " << kv.first << " : " << kv.second << endl; }
   };
   
   // I need secret access to ptr_vector to make it work for this
@@ -53,6 +53,7 @@ protected:
     public:
     typedef typename boost::ptr_vector<boost::nullable<Node> >::size_type size_type;
     typedef typename boost::ptr_vector<boost::nullable<Node> >::value_type value_type;
+    typedef typename boost::ptr_vector<boost::nullable<Node> >::const_iterator const_iterator;    
     typedef typename boost::ptr_vector<boost::nullable<Node> >::iterator iterator;    
     typedef typename boost::ptr_vector<boost::nullable<Node> >::auto_type auto_type;    
 
@@ -61,12 +62,12 @@ protected:
     // ptr_vector::c_array does not work with boost::nullable<> so this
     // mypv subclass has a subtlely different my_c_array that does work.
     // This is needed for resize.
-    Node** my_c_array()
+    Node** const my_c_array()
     {
       if ( this->empty() )
         return 0;
       else
-        return reinterpret_cast<Node**>(&(this->begin().base()[0]));
+        return reinterpret_cast<Node** const>(&(this->begin().base()[0]));
     }
 
     // To avoid using my_c_array() in erase, I add reset_at.
@@ -93,109 +94,110 @@ protected:
       return true;
     }
   };
-  typedef typename mypv::iterator iterator_0; // iterator_0 can refer to NULL
+
+  typedef typename mypv::iterator iterator_0;
+  typedef typename mypv::const_iterator const_iterator_0;
 
 public:
   
   typedef typename mypv::size_type size_type;
   typedef typename mypv::auto_type auto_type;
-  typedef std::pair<const Key&, T&> key_value;
+  typedef std::pair<const Key, T> key_value;
+  typedef const std::pair<const Key, const T> const_key_value;
   
   struct hopscotch_dead : public std::exception {
     virtual const char* what() { return "hopscotch null pointer deferenced"; }
   };
 
-  // Bi-directional iterator for the hopscotch hash map, using key_value
-  class iterator {
-  public:
+  struct iterator_dead : public std::exception {
+    virtual const char* what() { return "hopscotch iterator null pointer deferenced"; }
+  };
   
-    struct iterator_dead : public std::exception {
-      virtual const char* what() { return "hopscotch iterator null pointer deferenced"; }
-    };
-     
-    iterator() : kv(NULL), v(0), x() {}
-    iterator(mypv *v_in, iterator_0 x_in) : kv(NULL), v(v_in), x(x_in) {
+  class const_iterator;  // for friend for casting iterator to const_iterator
+  
+  // Bi-directional iterator for the hopscotch hash map, using key_value
+  class iterator : public boost::iterator_facade<iterator,
+    key_value, boost::bidirectional_traversal_tag>
+  {
+  public:
+    iterator() : v(0), x() {}
+    iterator(mypv *v_in, iterator_0 x_in) : v(v_in), x(x_in) {
       if (v && x != v->end() && boost::is_null(x))
         this->operator++();
     }
-    ~iterator() { reset(); }
-    iterator(const iterator& rhs) {
-      reset();
-      v = rhs.v;
-      x = rhs.x;
-    }
-    iterator& operator=(const iterator rhs) {
-      reset();
-      v = rhs.v;
-      x = rhs.x;
-      return (*this);
-    }
-    bool operator==(const iterator& rhs) { return ((rhs.v == v) && (rhs.x == x)); }
-    bool operator!=(const iterator& rhs) { return ((rhs.v != v) || (rhs.x != x)); }
-    iterator& operator++() {
-      if(v) { reset(); while (x != v->end()   && boost::is_null(++x)); }
-      return (*this); 
-    }
-    iterator& operator--() {
-      if(v) { reset(); while (x != v->begin() && boost::is_null(--x)); }
-      return (*this); 
-    }
-    iterator operator++(int) { 
-      iterator old(*this);
-      this->operator++();
-      return old;
-    }
-    iterator operator--(int) { 
-      iterator old(*this);
-      this->operator--();
-      return old;
-    }
-    key_value operator*(void) {
-      if (kv) {
-        return (*kv);
-      } else {
-        if (v && x != v->end() && !(boost::is_null(x))) {
-          return (*get_kv());
-        } else {
-          //throw iterator_dead();
-          assert(false);
-        }
-      }
-    }
-    const key_value* operator->(void) {
-      if (kv) {
-        return (kv);
-      } else {
-        if (v && x != v->end() && !(boost::is_null(x))) {
-          return get_kv();
-        } else {
-          //throw iterator_dead();
-          assert(false);
-        }
-      }
-    }
-    
-  protected:
-    
-    void reset() {
-      if (kv) {
-        delete kv;
-        kv = NULL; 
-      } 
-    }
-    key_value* get_kv() {
-      assert(kv==NULL);
-      kv = new std::pair<const Key&, T&>(x->key, x->item);
-      return kv;
-    }
-    key_value* kv;
+  private:
     mypv *v;
     iterator_0 x;
+
+    friend class boost::iterator_core_access;
+    friend class const_iterator;  // use forward declaration, for casting iterator to const_iterator
+    
+    void increment() {
+      if(v) { while (x != v->end()   && boost::is_null(++x)); }
+    }
+    void decrement() {
+      if(v) { while (x != v->begin() && boost::is_null(--x)); }
+    }
+    bool equal(iterator const& rhs) const {
+      return ((rhs.v == v) && (rhs.x == x));
+    }
+    key_value& dereference() const {
+      return (x->kv);
+    }
   };
 
+  class const_iterator : public boost::iterator_facade<const_iterator,
+    const_key_value, boost::bidirectional_traversal_tag>
+  {
+  public:
+    const_iterator() : v(0), x() {}
+    const_iterator(const iterator& from) : v(from.v), x(from.x) {}
+    const_iterator(const const_iterator& from) : v(from.v), x(from.x) {}
+    const_iterator(mypv *v_in, typename mypv::iterator x_in) : v(v_in), x(x_in) {
+      if (v && x != v->end() && boost::is_null(x))
+        this->operator++();
+    }
+    const_iterator(mypv *v_in, typename mypv::const_iterator x_in) : v(v_in), x(x_in) {
+      if (v && x != v->end() && boost::is_null(x))
+        this->operator++();
+    }
+  private:
+    mypv *v;
+    const_iterator_0 x;
+
+    friend class boost::iterator_core_access;
+    
+    void increment() {
+      if(v) { while (x != v->end()   && boost::is_null(++x)); }
+    }
+    void decrement() {
+      if(v) { while (x != v->begin() && boost::is_null(--x)); }
+    }
+    bool equal(const_iterator const& rhs) const {
+      return ((rhs.v == v) && (rhs.x == x));
+    }
+    const_key_value& dereference() const {
+      // This cast changes "T" to "const T" which should be safe
+      return reinterpret_cast<const std::pair<const Key, const T>& >(x->kv);
+    }
+  };
+  
+  typedef  boost::reverse_iterator< iterator >   reverse_iterator;  
+  typedef  boost::reverse_iterator< const_iterator >   const_reverse_iterator;  
+  
   // Iterator over non-empty values in this hash map that returns key-value pairs.
   iterator begin() { return iterator(&_store,_store.begin()); };
   iterator end()   { return iterator(&_store,_store.end()); };
+  const_iterator begin() const { return const_iterator(&_store,_store.cbegin()); };
+  const_iterator end() const   { return const_iterator(&_store,_store.cend()); };
+  const_iterator cbegin() const { return const_iterator(&_store,_store.cbegin()); };
+  const_iterator cend() const   { return const_iterator(&_store,_store.cend()); };
+  reverse_iterator rbegin() { return reverse_iterator(this->end()); };
+  reverse_iterator rend()   { return reverse_iterator(this->begin()); };
+  const_reverse_iterator rbegin() const { return const_reverse_iterator(this->cend()); };
+  const_reverse_iterator rend() const   { return const_reverse_iterator(this->cbegin()); };
+  const_reverse_iterator crbegin() const { return const_reverse_iterator(this->cend()); };
+  const_reverse_iterator crend() const   { return const_reverse_iterator(this->cbegin()); };
 
   // Very basic construction
   explicit hopscotch(size_type start_table_size = 32) : 
@@ -232,8 +234,8 @@ public:
       _size += 1;
     } else {
       auto_type old = _store.replace(loc.second, new Node(key, loc.first, item));
-      cerr << "replacing, delete " << old->key << " : " << old->home << " : "
-           << old->item << endl;
+      cerr << "replacing, delete " << old->kv.first << " : " << old->home << " : "
+           << old->kv.second << endl;
       cerr << "           inserting " << key << " : " << loc.first << " : "
           << item << " at " << loc.second << endl;
     }
@@ -246,7 +248,7 @@ public:
   T* lookup(const Key& key) {
     size_type n = locate(key).second;
     if (n < _table_size && !_store.is_null(n)) {
-      return &(_store[n].item);
+      return &(_store[n].kv.second);
     } else {
       return NULL;
     }
@@ -257,7 +259,7 @@ public:
   T& operator[](const Key& key) {
     size_type n = locate(key).second;
     if (n < _table_size && !_store.is_null(n)) {
-      return (_store[n].item);
+      return (_store[n].kv.second);
     } else {
       //throw hopscotch_dead();
       assert(false);
@@ -265,14 +267,14 @@ public:
   }
 
   // member tests whether the key is in the hash map.
-  bool member(const Key key) {
+  bool member(const Key& key) {
     size_type n = locate(key).second;
     return (n < _table_size && !_store.is_null(n));
   }
   
   // erase return true when the key was found and erased and false
   // when the key was not in the hash map.
-  bool erase(const Key key) {
+  bool erase(const Key& key) {
     size_type n = locate(key).second;
     if (n < _table_size && !_store.is_null(n)) {
       cerr << "++ erasing " << key << " at " << n << endl;
@@ -284,11 +286,11 @@ public:
   }
 
   // see is used for debugging and demonstration (with length 1 keys).
-  void see() {
+  void see() const {
     cerr << '{';
-    for(iterator_0 it = _store.begin(); it != _store.end(); ++it) {
+    for(const_iterator_0 it = _store.begin(); it != _store.end(); ++it) {
       if( !boost::is_null(it) ) {
-        cerr << it->key;
+        cerr << it->kv.first;
       } else {
         cerr << Key(".");
       }
@@ -305,7 +307,7 @@ protected:
     const size_type old_table_size = _table_size;
     const size_type new_table_size = 2 * old_table_size;
     _store.resize(new_table_size, NULL);
-    Node **a = _store.my_c_array();
+    Node ** const a = _store.my_c_array();
     uint32_t full_hash;
     size_type off, index, target;
     Node **it = a;
@@ -314,7 +316,7 @@ protected:
       if (*it) {
         off = diff((*it)->home, probe, old_table_size);
 
-        full_hash = CityHash64((*it)->key.c_str(), (*it)->key.size());
+        full_hash = CityHash64((*it)->kv.first.c_str(), (*it)->kv.first.size());
         index = full_hash % new_table_size;
         target = (index + off) % new_table_size;
 
@@ -346,9 +348,9 @@ protected:
   //    2) loc.second is _table_size and there is no hole up to ADD_LIM
   // Note that loc.second may wrap modulo _table_size so loc.second < loc.first,
   //   use diff(loc.first, loc.send) to get the positive offset.
-  loc locate(const Key key) {
-    uint32_t full_hash = CityHash64(key.c_str(), key.size());
-    size_type index = full_hash % _table_size;
+  loc locate(const Key& key) const {
+    const uint32_t full_hash = CityHash64(key.c_str(), key.size());
+    const size_type index = full_hash % _table_size;
     size_type hole = _table_size;
     size_type probe;
     const size_type end_off = (ADD_LIM <_table_size) ? ADD_LIM : _table_size;
@@ -359,10 +361,10 @@ protected:
           hole = probe;
         }
       } else {
-        Node& n = _store[probe];
-        if ((index == n.home) && (key == n.key)) {
-          cerr << "locate found old " << n.key << " : " << n.home << " : "
-               << n.item << endl;
+        const Node& n = _store[probe];
+        if ((index == n.home) && (key == n.kv.first)) {
+          cerr << "locate found old " << n.kv.first << " : " << n.home << " : "
+               << n.kv.second << endl;
           return std::pair<size_type,size_type>(index,probe);
         }
       }
@@ -371,12 +373,12 @@ protected:
   }
 
   // use diff(ideal bin, actual bin, old_table_size) to get the positive offset.
-  size_type diff(size_type home, size_type probe, size_type table_size) {
+  size_type diff(size_type home, size_type probe, size_type table_size) const {
     return ((probe>=home) ? probe-home : (table_size+probe)-home);
   }
 
   // use diff(ideal bin, actual bin) to get the positive offset.
-  size_type diff(size_type home, size_type probe) {
+  size_type diff(size_type home, size_type probe) const {
     return ((probe>=home) ? probe-home : (_table_size+probe)-home);
   }
   
@@ -397,14 +399,14 @@ protected:
         probe = (h.first+off) % _table_size;
         assert(!_store.is_null(probe));
         {
-          Node& n = _store[probe];
+          const Node& n = _store[probe];
           new_off = diff(n.home, h.second);
         }
         if (new_off < HOP_LIM) {
           {
-            Node& n = _store[probe];
-            cerr << "found existing Node to Hop: " << n.key << " : " <<  n.home
-                 << " : " <<  n.item << " moves " << probe << " -> " 
+            const Node& n = _store[probe];
+            cerr << "found existing Node to Hop: " << n.kv.first << " : " <<  n.home
+                 << " : " <<  n.kv.second << " moves " << probe << " -> " 
                  << h.second << endl;
           }
           _store.swap(probe, h.second);

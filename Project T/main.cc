@@ -59,22 +59,38 @@ void test() {
   h->add(std::string("p"),3); 
   h->add(std::string("q"),3); 
   h->add(std::string("C"),3);
-  
-  H::iterator it = h->begin();
-  const H::iterator end = h->end();
-  int count=1;
-  for(; it != end; ++it, ++count) {
-    cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
-    it->second = count;
+
+  {
+    H::iterator it = h->begin();
+    const H::iterator end = h->end();
+    for(int count=1; it != end; ++it, ++count) {
+      cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
+      it->second = count;
+    }
   }
   assert(h->lookup(std::string("not present")) == NULL);
+  cerr << "Set first, Q, to -1" << endl;
   h->begin()->second = (-1);
+  cerr << "Set last, N, to -2" << endl;
   (--(h->end()))->second = (-2);
+  cerr << "Set \"a\" to 1000" << endl;
   (*h)[std::string("a")] = 1000;
-  for(it = h->begin(), count=1; it != end; ++it, ++count) {
-    cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
+  {
+    H::const_iterator it = h->begin();
+    const H::const_iterator end = h->end();
+    for(int count=1; it != end; ++it, ++count) {
+      cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
+    }
+  }
+  {
+    H::const_reverse_iterator it = h->rbegin();  
+    const H::const_reverse_iterator end = h->rend();
+    for(int count=1; it != end; ++it, ++count) {
+      cerr << count << " : " << (*it).first << " : " << (*it).second << endl;
+    }
   }
   assert(!h->member(std::string("this key is not in the map")));
+  cerr << "call delete on map" << endl;
   delete h;
   h=NULL;
 }
